@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "outDir": "./build/lib",
+    "declaration": true,
+    "module": "commonjs",
+    "noImplicitReturns": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmitOnError": false,
+    "strict": true,
+    "target": "es5",
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "stripInternal": true,
+    "lib": ["es2015", "ESNext.BigInt"]
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["**/?(*.)+(spec|test).[jt]s?(x)"]
+}

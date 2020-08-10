@@ -1,0 +1,5 @@
+node_modules/
+
+# Output locations
+build/
+coverage/

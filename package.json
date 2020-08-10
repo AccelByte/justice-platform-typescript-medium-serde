@@ -1,0 +1,25 @@
+{
+  "name": "platform-typescript-medium-serde",
+  "version": "0.1.0",
+  "description": "",
+  "main": "build/lib/index.js",
+  "module": "build/es6/index.js",
+  "typings": "build/lib/index.d.ts",
+  "scripts": {
+    "build": "tsc && tsc -p tsconfig.es6.json",
+    "test": "npx jest",
+    "test:watch": "npx jest --watch"
+  },
+  "author": "AccelByte Inc",
+  "license": "AccelByte License",
+  "dependencies": {
+    "fp-ts": "^2.8.1",
+    "io-ts": "^2.2.9"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.9",
+    "jest": "^26.2.2",
+    "ts-jest": "^26.1.4",
+    "typescript": "^3.9.7"
+  }
+}
