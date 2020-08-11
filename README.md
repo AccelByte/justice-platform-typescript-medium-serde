@@ -4,6 +4,18 @@ This module extends Platform.Item.Image functionality to store non-image data by
 
 # Usage
 
+Installing dependencies
+
+```
+// You can use both git+ssh or git+https protocol as long as you have the credentials
+npm install git+ssh://bitbucket.org/accelbyte/justice-platform-typescript-medium-serde.git
+
+// Installing from specific branch
+npm install git+ssh://bitbucket.org/accelbyte/justice-platform-typescript-medium-serde.git#v0.1.0
+```
+
+Using the package
+
 ```typescript
 import {
   RawImageType,
@@ -59,3 +71,30 @@ const newRawImages: RawImageType[] = [];
 const newItem = { ...item, images: newRawImages };
 saveItem(newItem);
 ```
+
+# Development
+
+### Prerequisites
+
+- Make
+- Docker
+
+###### Building the project
+
+```bash
+make build
+```
+
+###### Testing the project
+
+```bash
+make test
+```
+
+# Publishing Package
+
+Build files are committed to the repository inside `build` directory to allow installing the package directly from git.
+
+Before pushing a commit make sure to execute `make build` and `make test`.
+
+Jenkins jobs are run on commits to make sure builds are up-to-date. When build files are not up-to-date the Jenkins jobs will fail and update the commit status
