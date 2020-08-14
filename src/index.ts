@@ -12,11 +12,13 @@ import {
   RawImageCodec,
 } from "./primitives/raw";
 import {
+  ImageMedium,
   ImageMediumCodec,
   fromRaw as fromRawToImage,
   toRaw as toRawFromImage,
 } from "./subtypes/image";
 import {
+  YoutubeVideoMedium,
   YoutubeVideoMediumCodec,
   YoutubeVideoMediumHelper,
   fromRaw as fromRawToYoutubeVideo,
@@ -28,6 +30,8 @@ export {
   RawImageTypeInvalidError,
   RawImageCodec,
   ImageMediumCodec,
+  ImageMedium,
+  YoutubeVideoMedium,
   YoutubeVideoMediumCodec,
   YoutubeVideoMediumHelper,
 };

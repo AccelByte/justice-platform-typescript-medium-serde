@@ -56,7 +56,10 @@ imagesMedia.push({
 
 // Push a youtube video medium to the array
 youtubeVideoMedia.push(
-  YoutubeVideoMediumHelper.createFromYoutubeId("oHg5SJYRHA0")
+  YoutubeVideoMediumHelper.createFromYoutubeId({
+    youtubeId: "oHg5SJYRHA0",
+    as: "",
+  })
 );
 
 // Convert back to RawImageType[]

@@ -11,13 +11,14 @@ import { Either, right, chain, tryCatch } from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 
 // Image URL will be prefixed
-const PREFIX = "accelbyte:youtube_id:";
+const PREFIX = "platform:youtube_id:";
 
 export class YoutubeRawMediumInvalidError extends Error {}
 
 export type YoutubeVideoType = t.TypeOf<typeof YoutubeVideoCodec>;
 export const YoutubeVideoCodec = t.type({
   youtubeId: t.string,
+  as: t.string,
 });
 export type YoutubeVideoMedium = Data &
   t.TypeOf<typeof YoutubeVideoMediumCodec>;
@@ -26,17 +27,24 @@ export const YoutubeVideoMediumCodec = t.type({
   value: YoutubeVideoCodec,
 });
 export const YoutubeVideoMediumHelper = {
-  createFromYoutubeId: (youtubeId: string): YoutubeVideoMedium => {
+  createFromYoutubeId: ({
+    youtubeId,
+    as,
+  }: {
+    youtubeId: string;
+    as: string;
+  }): YoutubeVideoMedium => {
     return {
       kind: "youtubeVideo",
       value: {
+        as,
         youtubeId,
       },
     };
   },
 };
 
-const encodedToYoutubeId = (
+const youtubeIdFromUrl = (
   str: string
 ): Either<YoutubeRawMediumInvalidError, string | null> => {
   // return null if not prefixed by the correct prefix
@@ -51,7 +59,7 @@ const encodedToYoutubeId = (
     })
   );
 };
-const youtubeIdToEncoded = (youtubeId: string): string =>
+const youtubeIdToUrl = (youtubeId: string): string =>
   `${PREFIX}${encodeURIComponent(youtubeId)}`;
 
 export const fromRaw = (
@@ -59,12 +67,17 @@ export const fromRaw = (
 ): Either<Error, YoutubeVideoMedium | null> => {
   return pipe(
     right(raw),
-    chain((raw) => encodedToYoutubeId(raw.imageUrl)),
-    chain((youtubeVideoId) => {
-      if (!youtubeVideoId) return right(null);
+    chain(({ imageUrl, as }) =>
+      pipe(
+        youtubeIdFromUrl(imageUrl),
+        chain((youtubeId) => right({ youtubeId, as }))
+      )
+    ),
+    chain(({ as, youtubeId }) => {
+      if (!youtubeId) return right(null);
       return right({
         kind: "youtubeVideo",
-        value: { youtubeId: youtubeVideoId },
+        value: { youtubeId: youtubeId, as: as || "" },
       });
     })
   );
@@ -73,12 +86,13 @@ export const fromRaw = (
 export const toRaw = (data: Data): RawImageType | null => {
   if (YoutubeVideoMediumCodec.is(data)) {
     return {
-      as: "",
-      caption: "",
+      as: data.value.as,
+      // Platform does not allow blank caption
+      caption: "-",
       height: 0,
       width: 0,
-      smallImageUrl: "",
-      imageUrl: youtubeIdToEncoded(data.value.youtubeId),
+      smallImageUrl: youtubeIdToUrl(data.value.youtubeId),
+      imageUrl: youtubeIdToUrl(data.value.youtubeId),
     };
   }
   return null;
