@@ -4,10 +4,13 @@
  * and restrictions contact your company contract manager.
  */
 
-import { MediumHelper } from "./index";
-import { ImageMedium } from "./subtypes/image";
-import { YoutubeVideoMedium } from "./subtypes/youtube-video";
-import { RawImageType } from "./primitives/raw";
+import {
+  MediumHelper,
+  YoutubeVideoMediumHelper,
+  ImageMedium,
+  YoutubeVideoMedium,
+  RawImageType,
+} from "./index";
 
 describe("ImageMedium", () => {
   const someobject: RawImageType = {
@@ -57,11 +60,11 @@ describe("ImageMedium", () => {
 
 describe("YoutubeVideoMedium", () => {
   const someobject: RawImageType = {
-    as: "as",
+    as: "some_as_value",
     caption: "caption",
     height: 123,
     width: 123,
-    imageUrl: "accelbyte:youtube_id:oHg5SJYRHA0",
+    imageUrl: "platform:youtube_id:oHg5SJYRHA0",
     smallImageUrl: "",
   };
   const [medium, error] = (MediumHelper.fromRaw(someobject) as unknown) as [
@@ -70,12 +73,13 @@ describe("YoutubeVideoMedium", () => {
   ];
   const [raw, toRawError] = MediumHelper.toRaw(medium);
 
-  test('Valid Image object with imageUrl prefixed with "accelbyte:youtube_id:" converts to YoutubeVideoMedium', () => {
+  test('Valid Image object with imageUrl prefixed with "platform:youtube_id:" converts to YoutubeVideoMedium', () => {
     expect(medium).toBeTruthy();
     expect(error).toBeFalsy();
     if (medium) {
       expect(medium.kind).toBe("youtubeVideo");
       expect(medium.value.youtubeId).toBe("oHg5SJYRHA0");
+      expect(medium.value.as).toBe("some_as_value");
     }
   });
 
@@ -84,6 +88,7 @@ describe("YoutubeVideoMedium", () => {
     expect(toRawError).toBeFalsy();
     if (raw) {
       expect(raw.imageUrl).toBe(someobject.imageUrl);
+      expect(raw.as).toBe(someobject.as);
     }
   });
 
@@ -93,8 +98,8 @@ describe("YoutubeVideoMedium", () => {
       caption: "caption",
       height: 123,
       width: 123,
-      imageUrl: "accelbyte:youtube_id:%E",
-      smallImageUrl: "",
+      imageUrl: "platform:youtube_id:%E",
+      smallImageUrl: "platform:youtube_id:%E",
     };
     const [medium, error] = (MediumHelper.fromRaw(raw) as unknown) as [
       YoutubeVideoMedium,
@@ -102,6 +107,27 @@ describe("YoutubeVideoMedium", () => {
     ];
     expect(medium).toBeFalsy();
     expect(error).toBeTruthy();
+  });
+});
+
+describe("YoutubeVideoMediumHelper.createFromYoutubeId", () => {
+  test("it should create a youtube mediun", () => {
+    const medium = YoutubeVideoMediumHelper.createFromYoutubeId({
+      youtubeId: "some_youtube_id",
+      as: "some_as_value",
+    });
+
+    expect(medium.kind).toBe("youtubeVideo");
+    expect(medium.value.youtubeId).toBe("some_youtube_id");
+    expect(medium.value.as).toBe("some_as_value");
+
+    const [raw, error] = MediumHelper.toRaw(medium);
+    expect(error).toBeFalsy();
+    expect(raw).toBeTruthy();
+    if (raw) {
+      expect(raw.imageUrl).toBe("platform:youtube_id:some_youtube_id");
+      expect(raw.as).toBe("some_as_value");
+    }
   });
 });
 

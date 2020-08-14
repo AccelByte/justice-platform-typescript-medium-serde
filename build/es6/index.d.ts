@@ -1,8 +1,8 @@
 import * as t from "io-ts";
 import { RawImageType, RawImageTypeInvalidError, RawImageCodec } from "./primitives/raw";
-import { ImageMediumCodec } from "./subtypes/image";
-import { YoutubeVideoMediumCodec, YoutubeVideoMediumHelper } from "./subtypes/youtube-video";
-export { RawImageType, RawImageTypeInvalidError, RawImageCodec, ImageMediumCodec, YoutubeVideoMediumCodec, YoutubeVideoMediumHelper, };
+import { ImageMedium, ImageMediumCodec } from "./subtypes/image";
+import { YoutubeVideoMedium, YoutubeVideoMediumCodec, YoutubeVideoMediumHelper } from "./subtypes/youtube-video";
+export { RawImageType, RawImageTypeInvalidError, RawImageCodec, ImageMediumCodec, ImageMedium, YoutubeVideoMedium, YoutubeVideoMediumCodec, YoutubeVideoMediumHelper, };
 export declare class MediumDeserializerNotFound extends Error {
 }
 export declare class MediumSerializerNotFound extends Error {
@@ -12,6 +12,7 @@ export declare const MediumCodec: t.UnionC<[t.TypeC<{
     kind: t.LiteralC<"youtubeVideo">;
     value: t.TypeC<{
         youtubeId: t.StringC;
+        as: t.StringC;
     }>;
 }>, t.TypeC<{
     kind: t.LiteralC<"image">;

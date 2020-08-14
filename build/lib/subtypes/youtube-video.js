@@ -23,7 +23,7 @@ var t = require("io-ts");
 var Either_1 = require("fp-ts/lib/Either");
 var function_1 = require("fp-ts/lib/function");
 // Image URL will be prefixed
-var PREFIX = "accelbyte:youtube_id:";
+var PREFIX = "platform:youtube_id:";
 var YoutubeRawMediumInvalidError = /** @class */ (function (_super) {
     __extends(YoutubeRawMediumInvalidError, _super);
     function YoutubeRawMediumInvalidError() {
@@ -34,22 +34,25 @@ var YoutubeRawMediumInvalidError = /** @class */ (function (_super) {
 exports.YoutubeRawMediumInvalidError = YoutubeRawMediumInvalidError;
 exports.YoutubeVideoCodec = t.type({
     youtubeId: t.string,
+    as: t.string,
 });
 exports.YoutubeVideoMediumCodec = t.type({
     kind: t.literal("youtubeVideo"),
     value: exports.YoutubeVideoCodec,
 });
 exports.YoutubeVideoMediumHelper = {
-    createFromYoutubeId: function (youtubeId) {
+    createFromYoutubeId: function (_a) {
+        var youtubeId = _a.youtubeId, as = _a.as;
         return {
             kind: "youtubeVideo",
             value: {
+                as: as,
                 youtubeId: youtubeId,
             },
         };
     },
 };
-var encodedToYoutubeId = function (str) {
+var youtubeIdFromUrl = function (str) {
     // return null if not prefixed by the correct prefix
     return function_1.pipe(Either_1.right(str), Either_1.chain(function (str) {
         if (!str.startsWith(PREFIX))
@@ -57,28 +60,33 @@ var encodedToYoutubeId = function (str) {
         return Either_1.tryCatch(function () { return decodeURIComponent(str.slice(PREFIX.length)); }, function () { return new YoutubeRawMediumInvalidError(); });
     }));
 };
-var youtubeIdToEncoded = function (youtubeId) {
+var youtubeIdToUrl = function (youtubeId) {
     return "" + PREFIX + encodeURIComponent(youtubeId);
 };
 exports.fromRaw = function (raw) {
-    return function_1.pipe(Either_1.right(raw), Either_1.chain(function (raw) { return encodedToYoutubeId(raw.imageUrl); }), Either_1.chain(function (youtubeVideoId) {
-        if (!youtubeVideoId)
+    return function_1.pipe(Either_1.right(raw), Either_1.chain(function (_a) {
+        var imageUrl = _a.imageUrl, as = _a.as;
+        return function_1.pipe(youtubeIdFromUrl(imageUrl), Either_1.chain(function (youtubeId) { return Either_1.right({ youtubeId: youtubeId, as: as }); }));
+    }), Either_1.chain(function (_a) {
+        var as = _a.as, youtubeId = _a.youtubeId;
+        if (!youtubeId)
             return Either_1.right(null);
         return Either_1.right({
             kind: "youtubeVideo",
-            value: { youtubeId: youtubeVideoId },
+            value: { youtubeId: youtubeId, as: as || "" },
         });
     }));
 };
 exports.toRaw = function (data) {
     if (exports.YoutubeVideoMediumCodec.is(data)) {
         return {
-            as: "",
-            caption: "",
+            as: data.value.as,
+            // Platform does not allow blank caption
+            caption: "-",
             height: 0,
             width: 0,
-            smallImageUrl: "",
-            imageUrl: youtubeIdToEncoded(data.value.youtubeId),
+            smallImageUrl: youtubeIdToUrl(data.value.youtubeId),
+            imageUrl: youtubeIdToUrl(data.value.youtubeId),
         };
     }
     return null;

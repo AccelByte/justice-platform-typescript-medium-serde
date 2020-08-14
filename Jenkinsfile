@@ -14,6 +14,7 @@ nodePod(name:"platform-typescript-medium-serde-build", type:"builder"){
           dockerd &
           sleep 5
           make clean
+          make test
           make check-on-deployment-build-diff
         """
       }

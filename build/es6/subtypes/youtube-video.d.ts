@@ -7,16 +7,21 @@ export declare class YoutubeRawMediumInvalidError extends Error {
 export declare type YoutubeVideoType = t.TypeOf<typeof YoutubeVideoCodec>;
 export declare const YoutubeVideoCodec: t.TypeC<{
     youtubeId: t.StringC;
+    as: t.StringC;
 }>;
 export declare type YoutubeVideoMedium = Data & t.TypeOf<typeof YoutubeVideoMediumCodec>;
 export declare const YoutubeVideoMediumCodec: t.TypeC<{
     kind: t.LiteralC<"youtubeVideo">;
     value: t.TypeC<{
         youtubeId: t.StringC;
+        as: t.StringC;
     }>;
 }>;
 export declare const YoutubeVideoMediumHelper: {
-    createFromYoutubeId: (youtubeId: string) => YoutubeVideoMedium;
+    createFromYoutubeId: ({ youtubeId, as, }: {
+        youtubeId: string;
+        as: string;
+    }) => YoutubeVideoMedium;
 };
 export declare const fromRaw: (raw: RawImageType) => Either<Error, YoutubeVideoMedium | null>;
 export declare const toRaw: (data: Data) => RawImageType | null;
